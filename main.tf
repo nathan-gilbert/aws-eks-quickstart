@@ -1,5 +1,7 @@
 provider "aws" {
-  region = "us-west-1"
+  region = var.aws_region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
 # Create a VPC
@@ -36,6 +38,10 @@ module "eks" {
       disk_size      = 20
     }
   }
+
+  cluster_endpoint_public_access  = true
+  cluster_endpoint_private_access = true
+  cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
 }
 
 # Security Group for public access
