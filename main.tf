@@ -18,6 +18,7 @@ module "vpc" {
   public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
   private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
   enable_nat_gateway = true
+  map_public_ip_on_launch = true
 }
 
 # Create an EKS cluster
@@ -37,8 +38,8 @@ module "eks" {
       max_size     = 3
       min_size     = 1
 
-      instance_types = ["t3.medium"]
-      disk_size      = 20
+      instance_types = ["t3.xlarge"]
+      disk_size      = 30
     }
   }
 
@@ -74,24 +75,24 @@ resource "aws_security_group" "sonarqube_sg" {
 }
 
 # Create an RDS PostgreSQL instance for SonarQube
-resource "aws_db_instance" "sonarqube_db" {
-  identifier           = "sonarqube-db"
-  engine              = "postgres"
-  engine_version      = "15.10"
-  instance_class      = "db.t3.medium"
-  allocated_storage   = 20
-  username           = "sonarqube"
-  password           = "ChangeMe1234!"
-  db_subnet_group_name = aws_db_subnet_group.sonarqube_db_subnet_group.name
-  vpc_security_group_ids = [aws_security_group.sonarqube_sg.id]
-  publicly_accessible = false
-  skip_final_snapshot = true
-}
+# resource "aws_db_instance" "sonarqube_db" {
+#   identifier           = "sonarqube-db"
+#   engine              = "postgres"
+#   engine_version      = "15.10"
+#   instance_class      = "db.t3.medium"
+#   allocated_storage   = 20
+#   username           = "sonarqube"
+#   password           = "ChangeMe1234!"
+#   db_subnet_group_name = aws_db_subnet_group.sonarqube_db_subnet_group.name
+#   vpc_security_group_ids = [aws_security_group.sonarqube_sg.id]
+#   publicly_accessible = false
+#   skip_final_snapshot = true
+# }
 
-resource "aws_db_subnet_group" "sonarqube_db_subnet_group" {
-  name       = "sonarqube-db-subnet-group"
-  subnet_ids = module.vpc.private_subnets
-}
+# resource "aws_db_subnet_group" "sonarqube_db_subnet_group" {
+#   name       = "sonarqube-db-subnet-group"
+#   subnet_ids = module.vpc.private_subnets
+# }
 
 # Outputs for SonarQube Helm configuration
 output "eks_cluster_name" {
@@ -102,15 +103,15 @@ output "eks_cluster_endpoint" {
   value = module.eks.cluster_endpoint
 }
 
-output "sonarqube_rds_endpoint" {
-  value = aws_db_instance.sonarqube_db.endpoint
-}
+# output "sonarqube_rds_endpoint" {
+#   value = aws_db_instance.sonarqube_db.endpoint
+# }
 
-output "sonarqube_rds_username" {
-  value = aws_db_instance.sonarqube_db.username
-}
+# output "sonarqube_rds_username" {
+#   value = aws_db_instance.sonarqube_db.username
+# }
 
-output "sonarqube_rds_password" {
-  value = aws_db_instance.sonarqube_db.password
-  sensitive = true
-}
+#output "sonarqube_rds_password" {
+#  value = aws_db_instance.sonarqube_db.password
+#  sensitive = true
+#}
