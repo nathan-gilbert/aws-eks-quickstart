@@ -32,20 +32,48 @@ module "eks" {
   # To add the current caller identity as an administrator
   enable_cluster_creator_admin_permissions = true
 
+  cluster_addons = {
+    coredns = {
+      most_recent = true
+    }
+    kube-proxy = {
+      most_recent = true
+    }
+    vpc-cni = {
+      most_recent = true
+    }
+    aws-ebs-csi-driver = {
+      most_recent = true
+    }
+  }
+
+
   eks_managed_node_groups = {
-    eks_nodes = {
+    sonarqube_nodes = {
       desired_size = 2
       max_size     = 3
       min_size     = 1
 
-      instance_types = ["t3.xlarge"]
-      disk_size      = 30
+      # ami_type       = "AL2023_x86_64_STANDARD"
+      instance_types = ["m5.xlarge"]
+      # instance_types = ["t3.xlarge"]
+      # disk_size      = 30
+
+      # Needed by the aws-ebs-csi-driver
+      iam_role_additional_policies = {
+        AmazonEBSCSIDriverPolicy = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+      }
     }
   }
 
   cluster_endpoint_public_access  = true
   cluster_endpoint_private_access = true
   cluster_endpoint_public_access_cidrs = ["0.0.0.0/0"]
+
+  tags = {
+    Environment = "enterprise"
+    Terraform   = "true"
+  }
 }
 
 # Security Group for public access
