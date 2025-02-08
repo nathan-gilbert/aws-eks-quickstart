@@ -100,6 +100,16 @@ resource "aws_security_group" "sonarqube_sg" {
   }
 }
 
+# Outputs for SonarQube Helm configuration
+output "eks_cluster_name" {
+  value = module.eks.cluster_name
+}
+
+output "eks_cluster_endpoint" {
+  value = module.eks.cluster_endpoint
+}
+
+## Not needed
 # Create an RDS PostgreSQL instance for SonarQube
 # resource "aws_db_instance" "sonarqube_db" {
 #   identifier           = "sonarqube-db"
@@ -119,15 +129,6 @@ resource "aws_security_group" "sonarqube_sg" {
 #   name       = "sonarqube-db-subnet-group"
 #   subnet_ids = module.vpc.private_subnets
 # }
-
-# Outputs for SonarQube Helm configuration
-output "eks_cluster_name" {
-  value = module.eks.cluster_name
-}
-
-output "eks_cluster_endpoint" {
-  value = module.eks.cluster_endpoint
-}
 
 # output "sonarqube_rds_endpoint" {
 #   value = aws_db_instance.sonarqube_db.endpoint
